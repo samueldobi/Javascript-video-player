@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" 
+    integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Vid</title>
+</head>
+<body>
+    <div class="vid-body">
+        <div class="vid-container">
+            <video src="gladius.mp4" class="video-viewer"></video>
+            <div class="seek-container">
+                <div class="seek-slider">
+                    <div class="seek-slider-range"></div>
+                </div>
+                <div class="control-btns volume-display">
+                    <div class="btn-range">
+                        <button class="play-btn">►</button>
+                        <input type="range" name="volume" id="" class="player-slider" min="0" step="0.1" max="1"  value="0.5">
+                        <input type="range" name="playbackRate" id="" class="player-slider"  min="0" step="0.2" max="2" value="1">
+                    </div>
+                <div class="seek-rate">
+                    <button class="skip-btn" data-jump=" 10"><<10s</button>
+                    <button class="skip-btn" data-jump=" 25">25s>></button>
+                    <button data-full="full" class=" skip-btn"><i class="fa-solid fa-expand"></i></button>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: #4158D0;
+            background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+            display: flex;
+            background-size: cover;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .vid-body:fullscreen {
+            max-width: none;
+            width: 100%;
+       }
+       .vid-body:-webkit-full-screen {
+            max-width: none;
+            width: 100%;
+       }
+        .vid-container{
+            /* overflow: hidden; */
+            max-width: 750px;
+        }
+        .vid-container:hover .seek-container{
+            transform: translateY(-50px);
+            transition: all .3s;
+        }
+        .video-viewer{
+            width: 100%;
+        }
+        .seek-container{
+            /* * display: flex;
+            flex-direction: column;
+            flex-basis: 100%; 
+            width:max-content;*/
+            max-width: inherit;
+            width: 100%;
+            position: absolute;
+            bottom: 65px;
+            overflow: hidden;
+        }
+        .seek-slider{
+            width: 100%;
+            height: 20px;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .seek-slider-range{
+            background: blue;
+            height: 100%;
+            width: 50%;
+        }
+        .control-btns{
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+        } 
+        .play-btn ,.skip-btn{
+            background: none;
+            color: white;
+            border: 0;
+            padding: 0;
+            cursor: pointer;
+            max-width: 50px;
+        }
+        .skip-btn{
+            font-size: 15px;
+            padding: 5px;
+        }
+         input[type= range]{
+          outline: none;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            background-color: #ffc600;
+            height: 8.4px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            background:  #ffc600;
+            height: 22px;
+            width: 18px;
+        }
+         
+    </style>
+    <script>
+        //get the elements 
+        const playBtn = document.querySelector('.play-btn')
+        const vidSource = document.querySelector('.video-viewer')
+        const seekBody = document.querySelector('.seek-slider')
+        const seekSlide = document.querySelector('.seek-slider-range')
+        const skipButtons = document.querySelectorAll('.skip-btn')
+        const ranges = document.querySelectorAll('.player-slider')
+        const vol = document.querySelector('[name=volume]')
+        const rate = document.querySelector('[name=playbackRate]')
+        const full = document.querySelector('[data-full]');
+
+        // build the functions 
+        function togglePlay(){
+            if (vidSource.paused){
+                vidSource.play()
+                playBtn.textContent = '❚ ❚'
+            }else{
+                vidSource.pause()
+                playBtn.textContent = '►'  
+            }
+        }
+        function skip(){
+            vidSource.currentTime += parseFloat(this.dataset.jump )
+        }
+        function handleRange(){
+            vidSource.volume = vol.value
+            vidSource.playbackRate = rate.value
+        }
+        function handleSeek(){
+            const percent = ((vidSource.currentTime / vidSource.duration) * 100)
+            seekSlide.style.width =  `${percent}%`
+        }
+        function updateSlider(e){
+            const slideNum = (e.offsetX / seekBody.offsetWidth ) * vidSource.duration
+            console.log(slideNum)
+            vidSource.currentTime = slideNum
+        }
+
+        // add the event listeners 
+        vidSource.addEventListener('click', togglePlay)
+        vidSource.addEventListener('timeupdate', handleSeek)
+        playBtn.addEventListener('click', togglePlay)
+        skipButtons.forEach(skipButton => skipButton.addEventListener('click', skip))
+        ranges.forEach(range => range.addEventListener('change', handleRange))
+        seekBody.addEventListener('click', updateSlider)
+        full.addEventListener('click', ()=>{vidSource.requestFullscreen()
+    })
+    </script>
+</body>
+</html>
